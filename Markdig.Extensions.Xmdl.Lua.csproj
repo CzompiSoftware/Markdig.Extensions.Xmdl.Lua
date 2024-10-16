@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<LangVersion>12.0</LangVersion>
+		<Version>3.0.0</Version>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<AssemblyVersion>3.0.0.0</AssemblyVersion>
+		<FileVersion>3.0.0</FileVersion>
+		<VersionPrefix>3.0.0</VersionPrefix>
+		<Authors>Czompi</Authors>
+		<Company>Czompi Software</Company>
+		<Product>Markdig.Extensions.Xmdl.Lua</Product>
+		<Description>Xmdl language extension with Lua scripting for Markdig</Description>
+		<Copyright>Copyright © Czompi Software 2024</Copyright>
+		<Summary>Xmdl language extension with Lua scripting for Markdig</Summary>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Title>Markdig.Extensions.Xmdl.Lua</Title>
+		<PackageId>Markdig.Extensions.Xmdl.Lua</PackageId>
+		<PackageTags>Markdown;CommonMark;md;html;md2html;xmdl;eXtendedMarkDownLang;Lua;scripting</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>packageIcon.png</PackageIcon>
+		<PackageIconUrl>https://cdn.czsoft.hu/img/czsoftnuget@1.0/markdig_extensions_xmdl.png</PackageIconUrl>
+		<PackageProjectUrl>https://docs.czsoft.hu/xmdl/csharp/markdig-extension#lua</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RootNamespace>Markdig.Extensions.Xmdl.Lua</RootNamespace>
+		<AssemblyName>Markdig.Extensions.Xmdl.Lua</AssemblyName>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<None Include="LICENSE" Pack="true" PackagePath="LICENSE.md" />
+		<None Include="packageIcon.png" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	
+	<ItemGroup>
+
+		<PackageReference Include="Markdig" Version="0.37.0" ExcludeAssets="runtime">
+			<Private>false</Private>
+		</PackageReference>
+
+		<PackageReference Include="MoonSharp" Version="2.0.0" />
+		<PackageReference Include="SS.NuGet.Publish" Version="1.0.2311.32">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+<!--	<ItemGroup Condition="'$(Configuration)' != 'Release'">-->
+<!--		<ProjectReference Include="..\Markdig.Extensions.Xmdl\Markdig.Extensions.Xmdl.csproj" />-->
+<!--	</ItemGroup>-->
+<!--	<ItemGroup Condition="'$(Configuration)' == 'Release'">-->
+<!--		<PackageReference Include="Markdig.Extensions.Xmdl" Version="3.0.0" />-->
+<!--	</ItemGroup>-->
+	<ItemGroup>
+		<PackageReference Include="Markdig.Extensions.Xmdl" Version="3.0.0" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<NuGetPublishType>remote</NuGetPublishType>
+		<NuGetPublishLocation>https://nuget.czsoft.hu/v3/index.json</NuGetPublishLocation>
+	</PropertyGroup>
+
+</Project>
