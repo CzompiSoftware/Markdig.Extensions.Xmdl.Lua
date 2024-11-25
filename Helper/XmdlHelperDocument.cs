@@ -1,10 +1,9 @@
-﻿using System;
-using MoonSharp.Interpreter;
+﻿using MoonSharp.Interpreter;
 
-namespace Markdig.Extensions.Xmdl.Lua;
+namespace Markdig.Extensions.Xmdl.Lua.Helper;
 
 [MoonSharpUserData]
-public class XmdlHelperDocument(XmdlDocument document)
+public class XmdlDocumentHelper(XmdlDocument document)
 {
     private XmdlDocument _document = document;
 
