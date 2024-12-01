@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using CzomPack.Logging;
 using CzomPack.Network;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using Markdig.Extensions.Xmdl.ExecutableCode;
 using Markdig.Extensions.Xmdl.Lua.Helper;
 using MoonSharp.Interpreter;
@@ -16,24 +15,69 @@ internal class ExecutableCodeRenderer(IExecutableCodeOptions options, MarkdownPi
     private readonly IExecutableCodeOptions _options = options;
     private readonly MarkdownPipeline _pipeline = pipeline;
 
-    public override async Task<(ExecutableCodeState, ExecutableCodeResult, List<string>)> ExecuteAsync(string script, string previousScript = null)
+    public override async Task<(ExecutableCodeState, ExecutableCodeResult, List<string>)> ExecuteAsync(string script, MarkdownParserContext context, string previousScript = null)
     {
         Globals.LuaScript = new Script();
+        
+        // Add default Xmdl data types.
         UserData.RegisterType<XmdlDocumentHelper>();
         UserData.RegisterType<XmdlNetworkHelper>();
         UserData.RegisterType<ResponseData>();
-        // Table globalContext = new(Globals.LuaScript);
-        var document = new Table(Globals.LuaScript);
-        // document["insertHtml"] = "HTML";
-        // document["insertMarkdown"] = "MD";
-        // Globals.LuaScript.Globals["document"] = document;
+        
+        // Add default Xmdl objects.
         Globals.LuaScript.Globals["document"] = new XmdlDocumentHelper(XmdlDocument.Instance);
         Globals.LuaScript.Globals["net"] = new XmdlNetworkHelper();
-        //globalContext.Set("XmdlDoc", DynValue.FromObject(Globals.LuaScript, XmdlDocument.Instance));
-        // Globals.LuaScript.LoadFunction(script);
-        List<string> errors = new();
         
-        DynValue dynValue = DynValue.Nil;
+        foreach (var (key, value) in context.Properties)
+        {
+            
+            Debug.Assert(key != null, nameof(key) + " != null");
+
+            if (key is not string name)
+            {
+                Logger.Warning<ExecutableCodeRenderer>("Invalid name provided. Skipping...");
+                continue;
+            }
+            
+            if (name.Equals("document", StringComparison.OrdinalIgnoreCase) || name.Equals("net", StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.Verbose<ExecutableCodeRenderer>("You are not allowed override default Xmdl objects.");
+                continue;
+            }
+
+            if (!Globals.LuaScript.Globals.Get(name).IsNilOrNan())
+            {
+                Logger.Verbose<ExecutableCodeRenderer>("Object `{object}` already exists.", name);
+                continue;
+            }
+            
+            var type = value.GetType();
+            if (type == typeof(XmdlDocumentHelper) || type == typeof(XmdlNetworkHelper) || type == typeof(ResponseData))
+            {
+                Logger.Verbose<ExecutableCodeRenderer>("Type `{type}` is already registered.", type);
+                continue;
+            }
+            try
+            {
+                UserData.RegisterType(type);
+            }
+            catch (Exception e)
+            {
+                Logger.Warning<ExecutableCodeRenderer>("Failed to register type {type}: {message}", value.GetType(), e.Message);
+            }
+
+            try
+            {
+                Globals.LuaScript.Globals[name] = value;
+            }
+            catch (Exception e)
+            {
+                Logger.Warning<ExecutableCodeRenderer>("Failed to register `{name}` into the Lua Global Table: {message}", name, e.Message);
+            }
+        }
+        List<string> errors = [];
+        
+        var dynValue = DynValue.Nil;
         try
         {
             dynValue = Globals.LuaScript.DoString(script, Globals.LuaScript.Globals, "xmdlua_code_" + Crc.Parse(script).ToLowerInvariant());
@@ -44,10 +88,9 @@ internal class ExecutableCodeRenderer(IExecutableCodeOptions options, MarkdownPi
         }
         var result = new ExecutableCodeResult
         {
-            Errors = new()
+            Errors = []
             //Errors = compilationContext.Errors.Select(e => new ExecutableCodeError(e.Severity.ToString(), "Lua", e.ToString())).ToList(),
         };
-        //object returnValue = null;
         object returnValue;
         try
         {

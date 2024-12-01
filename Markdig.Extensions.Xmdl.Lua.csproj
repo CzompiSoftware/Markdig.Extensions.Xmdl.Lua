@@ -3,12 +3,12 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<LangVersion>12.0</LangVersion>
-		<Version>3.0.1</Version>
+		<Version>3.1.0</Version>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-		<AssemblyVersion>3.0.1.0</AssemblyVersion>
-		<FileVersion>3.0.1</FileVersion>
-		<VersionPrefix>3.0.1</VersionPrefix>
+		<AssemblyVersion>3.1.0.0</AssemblyVersion>
+		<FileVersion>3.1.0</FileVersion>
+		<VersionPrefix>3.1.0</VersionPrefix>
 		<Authors>Czompi</Authors>
 		<Company>Czompi Software</Company>
 		<Product>Markdig.Extensions.Xmdl.Lua</Product>
@@ -43,21 +43,18 @@
 		<PackageReference Include="CzomPack.Network" Version="3.0.2.5" />
 
 		<PackageReference Include="MoonSharp" Version="2.0.0" />
-		<PackageReference Include="Markdig.Extensions.Xmdl" Version="3.0.0" />
-		
-		<PackageReference Include="SS.NuGet.Publish" Version="1.0.2311.32">
+
+		<PackageReference Include="SS.NuGet.Publish" Version="1.0.2311.32" Condition="'$(Configuration)'=='Release'">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
-<!--	<ItemGroup Condition="'$(Configuration)' != 'Release'">-->
-<!--		<ProjectReference Include="..\Markdig.Extensions.Xmdl\Markdig.Extensions.Xmdl.csproj" />-->
-<!--	</ItemGroup>-->
-<!--	<ItemGroup Condition="'$(Configuration)' == 'Release'">-->
-<!--		<PackageReference Include="Markdig.Extensions.Xmdl" Version="3.0.0" />-->
-<!--	</ItemGroup>-->
-	<ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' != 'Release'">
+		<ProjectReference Include="..\Markdig.Extensions.Xmdl\Markdig.Extensions.Xmdl.csproj" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<PackageReference Include="Markdig.Extensions.Xmdl" Version="3.1.0" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
