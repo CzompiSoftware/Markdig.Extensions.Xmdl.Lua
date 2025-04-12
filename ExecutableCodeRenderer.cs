@@ -28,7 +28,7 @@ internal class ExecutableCodeRenderer(IExecutableCodeOptions options, MarkdownPi
         Globals.LuaScript.Globals["document"] = new XmdlDocumentHelper(XmdlDocument.Instance);
         Globals.LuaScript.Globals["net"] = new XmdlNetworkHelper();
         
-        foreach (var (key, value) in context.Properties)
+        foreach (var (key, value) in (context?.Properties ?? new Dictionary<object, object>()))
         {
             
             Debug.Assert(key != null, nameof(key) + " != null");

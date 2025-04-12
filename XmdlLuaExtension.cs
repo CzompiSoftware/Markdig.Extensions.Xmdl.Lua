@@ -21,7 +21,7 @@ public class XmdlLuaExtension : XmdlBaseExtension
     {
         base.Setup(pipeline);
         pipeline.InlineParsers.ReplaceOrAdd<ExecutableCodeInlineParser>(new ExecutableCodeInlineParser("lua", "Lua"));
-        pipeline.InlineParsers.ReplaceOrAdd<ExecutableCodeBlockParser>(new ExecutableCodeBlockParser("lua", "Lua"));
+        pipeline.BlockParsers.ReplaceOrAdd<ExecutableCodeBlockParser>(new ExecutableCodeBlockParser("lua", "Lua"));
     }
     public override void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
     {
